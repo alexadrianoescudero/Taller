@@ -12,6 +12,8 @@ using Talller.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Talller
 {
@@ -30,8 +32,51 @@ namespace Talller
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            #region Configuracion de roles y usuarios
+            services.AddIdentity<ApplicationUser, RolesUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                  .AddEntityFrameworkStores<ApplicationDbContext>()
+                  .AddDefaultTokenProviders();
+
+            #endregion
+
+            #region Configuracion de Password
+            //services.Configure<IdentityOptions>(options =>
+            //   {
+            //    // Password settings.
+            //    options.Password.RequireDigit = true;
+            //       options.Password.RequireLowercase = true;
+            //       options.Password.RequireNonAlphanumeric = true;
+            //       options.Password.RequireUppercase = true;
+            //       options.Password.RequiredLength = 6;
+            //       options.Password.RequiredUniqueChars = 1;
+
+            //    // Lockout settings.
+            //    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+            //       options.Lockout.MaxFailedAccessAttempts = 5;
+            //       options.Lockout.AllowedForNewUsers = true;
+
+            //    // User settings.
+            //    options.User.AllowedUserNameCharacters =
+            //       "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+            //       options.User.RequireUniqueEmail = false;
+            //   }); 
+            #endregion
+
+            #region Redirecicion de Acceso
+            services.ConfigureApplicationCookie(options =>
+                {
+                // Cookie settings
+                options.Cookie.HttpOnly = true;
+                    options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+
+                    options.LoginPath = "/Identity/Account/Login";
+                    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+                    options.SlidingExpiration = true;
+                });
+
+            #endregion        
+
             services.AddControllersWithViews();
             services.AddRazorPages();
         }

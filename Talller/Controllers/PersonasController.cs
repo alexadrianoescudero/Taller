@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,8 @@ using Talller.Models;
 
 namespace Talller.Controllers
 {
+    //[Authorize(Roles = "Administrador")]
+    [Authorize]
     public class PersonasController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -18,13 +21,13 @@ namespace Talller.Controllers
         {
             _context = context;
         }
-
+        [Authorize(Roles = "Administrador,Personas")]
         // GET: Personas
         public async Task<IActionResult> Index()
         {
             return View(await _context.Persona.ToListAsync());
         }
-
+        [Authorize(Roles = "Administrador,Personas")]
         // GET: Personas/Details/5
         public async Task<IActionResult> Details(string id)
         {
@@ -42,7 +45,7 @@ namespace Talller.Controllers
 
             return View(persona);
         }
-
+        [Authorize(Roles = "Administrador")]
         // GET: Personas/Create
         public IActionResult Create()
         {
@@ -64,7 +67,7 @@ namespace Talller.Controllers
             }
             return View(persona);
         }
-
+        [Authorize(Roles = "Administrador")]
         // GET: Personas/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
@@ -115,7 +118,7 @@ namespace Talller.Controllers
             }
             return View(persona);
         }
-
+        [Authorize(Roles = "Administrador")]
         // GET: Personas/Delete/5
         public async Task<IActionResult> Delete(string id)
         {

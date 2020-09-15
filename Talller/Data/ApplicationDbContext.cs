@@ -7,11 +7,9 @@ using Talller.Models;
 
 namespace Talller.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, RolesUser, string> //IdentityDbContext<ApplicationUser>
     {
-        public ApplicationDbContext()
-        {
-        }
+        
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
